@@ -1,4 +1,5 @@
 `include "parameters.v"
+`include "setup.v"
 
 module solitaire(clk, rst) begin
     input clk, rst;
@@ -50,7 +51,7 @@ module solitaire(clk, rst) begin
 
 
     /* modules we need to write
-       - randomizer to fill the tableaus []
+       - randomizer to fill the tableaus [x]
        - input/output to terminal (could be separate) []
        - lets user look at talon pile []
        - lets user move card from tableau to tableau []

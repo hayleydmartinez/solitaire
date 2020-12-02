@@ -31,13 +31,17 @@ module setup(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tableau
     integer i;
     reg [2:0] curr_count [0:6];
     reg [2:0] max_count [0:6];
-    reg [5:0] deck_count;
+    reg [6:0] full_count;
 
     wire [2:0] random_tableau;
+    wire [5:0] random_card;
     assign random_tableau = (seed_num % 7);
     assign random_card = (seed_num % 52);
 
     reg [2:0] tableau_index;
+    reg [2:0] tableau_max;
+    
+    wire tableaus_created = (full_count == 7);
 
     always @(posedge clk, posedge rst) begin
         if (rst || !deck_created) begin
@@ -56,20 +60,67 @@ module setup(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tableau
             // initialize tableau maximums
             for (i = 0; i < 7; i = i+1) max_count[i] = i + 1;
 
-            ready = 0;
+            // initialize count of full tableaus
+            full_count = 0;
         end
 
-        if (curr_count[random_tableau] != max_count[random_tableau]) begin
+        // if the tableau isn't full and that card is present, and there are still cards in the deck
+        if ((!tableaus_created) && (curr_count[random_tableau] != max_count[random_tableau]) && finished_deck[random_card] != 6'b000000) begin
             tableau_index = curr_count[random_tableau];
+            tableau_max = max_count[random_tableau];
             case(random_tableau)
-                3'b000: begin
-                    tableau1[]
-                end
+                3'b000: tableau1[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
+                3'b001: tableau2[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
+                3'b010: tableau3[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
+                3'b011: tableau4[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
+                3'b100: tableau5[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
+                3'b101: tableau6[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
+                3'b110: tableau7[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
+                default: 
             endcase
+            finished_deck[random_card] = 6'b000000;
+            curr_count[random_tableau] = curr_count[random_tableau] + 1;
+            full_count = (tableau_index == tableau_max - 1) ? full_count + 1 : full_count;
         end
-
     end
 
+    // populate stock pile and talon pile
+    integer i;
+    reg [1:0] stock_count;
+    reg [4:0] talon_count;
+    reg [5:0] deck_index;
+    wire stock_talon_created = (stock_count == 3) & (talon_count == 24);
+
+    always @(posedge clk, posedge rst) begin
+        if (rst || !tableaus_created) begin
+            for (i = 0; i < 3; i = i+1) stock_pile[i] = 6'b000000;
+            for (i = 0; i < 24; i = i+1) talon_pile[i] = 6'b000000;
+
+            stock_count = 0;
+            talon_count = 0;
+            deck_index = 0;
+        end
+
+        // fill stock pile first
+        if (stock_count != 3) begin
+            if (finished_deck[deck_index] != 0) begin
+                // remember: all of the cards in the stock pile are visible
+                stock_pile[stock_count] = finished_deck[deck_index] | 6'b000001;
+                stock_count = stock_count + 1;
+            end
+            deck_index = deck_index + 1;
+        end
+        // file talon pile second
+        else if (talon_count != 24) begin
+            if (finished_deck[deck_index] != 0) begin
+                talon_pile[talon_count] = finished_deck[deck_index];
+                talon_count = talon_count + 1;
+            end
+            deck_index = deck_index + 1;
+        end
+    end
+
+    assign ready = deck_created & tableaus_created & stock_talon_created;
 
 endmodule
 
