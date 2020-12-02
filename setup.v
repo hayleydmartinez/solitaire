@@ -1,8 +1,7 @@
 `include "parameters.v"
 
-module setup(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tableau3, tableau4, tableau5, tableau6, tableau7, ready)
+module setup(clk, rst, stock_pile, talon_pile, tableau1, tableau2, tableau3, tableau4, tableau5, tableau6, tableau7, ready)
     input clk, rst;
-    input [6:0] deck [0:51];
 
     output ready;
 
@@ -17,11 +16,11 @@ module setup(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tableau
     output reg [6:0] tableau6 [0:17];
     output reg [6:0] tableau7 [0:18];
 
-    reg [6:0] finished_deck [0:51];
+    reg [6:0] deck [0:51];
     reg deck_created;
 
     // create deck
-    make_deck get_deck(.clk(clk), .rst(rst), .deck(finished_deck), .finished(deck_created));
+    make_deck get_deck(.clk(clk), .rst(rst), .deck(deck), .finished(deck_created));
 
     // pseudo-random number generator
     reg [5:0] seed_num;
@@ -65,20 +64,20 @@ module setup(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tableau
         end
 
         // if the tableau isn't full and that card is present, and there are still cards in the deck
-        if ((!tableaus_created) && (curr_count[random_tableau] != max_count[random_tableau]) && finished_deck[random_card] != 6'b000000) begin
+        if ((!tableaus_created) && (curr_count[random_tableau] != max_count[random_tableau]) && deck[random_card] != 6'b000000) begin
             tableau_index = curr_count[random_tableau];
             tableau_max = max_count[random_tableau];
             case(random_tableau)
-                3'b000: tableau1[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
-                3'b001: tableau2[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
-                3'b010: tableau3[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
-                3'b011: tableau4[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
-                3'b100: tableau5[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
-                3'b101: tableau6[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
-                3'b110: tableau7[tableau_index] = (tableau_index == tableau_max - 1) ? (finished_deck[random_card] | 6'b000001) : finished_deck[random_card];
+                3'b000: tableau1[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
+                3'b001: tableau2[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
+                3'b010: tableau3[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
+                3'b011: tableau4[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
+                3'b100: tableau5[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
+                3'b101: tableau6[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
+                3'b110: tableau7[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
                 default: 
             endcase
-            finished_deck[random_card] = 6'b000000;
+            deck[random_card] = 6'b000000;
             curr_count[random_tableau] = curr_count[random_tableau] + 1;
             full_count = (tableau_index == tableau_max - 1) ? full_count + 1 : full_count;
         end
@@ -103,17 +102,17 @@ module setup(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tableau
 
         // fill stock pile first
         if (stock_count != 3) begin
-            if (finished_deck[deck_index] != 0) begin
+            if (deck[deck_index] != 0) begin
                 // remember: all of the cards in the stock pile are visible
-                stock_pile[stock_count] = finished_deck[deck_index] | 6'b000001;
+                stock_pile[stock_count] = deck[deck_index] | 6'b000001;
                 stock_count = stock_count + 1;
             end
             deck_index = deck_index + 1;
         end
         // file talon pile second
         else if (talon_count != 24) begin
-            if (finished_deck[deck_index] != 0) begin
-                talon_pile[talon_count] = finished_deck[deck_index];
+            if (deck[deck_index] != 0) begin
+                talon_pile[talon_count] = deck[deck_index];
                 talon_count = talon_count + 1;
             end
             deck_index = deck_index + 1;

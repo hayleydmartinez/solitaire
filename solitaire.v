@@ -4,13 +4,6 @@
 module solitaire(clk, rst) begin
     input clk, rst;
 
-    // read in deck
-    reg [6:0] deck [0:51], read7;
-    integer r, file, start, count;
-    file = $fopenr("deck.txt");
-    r = $fread(file, deck[0], start, count);
-    r = $fread(file, read7);
-
     // foundation registers
     reg [6:0] heart_foundation, club_foundation, diamond_foundation, spade_foundation;
     reg [6:0] foundation_cards [51:0];
@@ -36,8 +29,7 @@ module solitaire(clk, rst) begin
 
     reg setup_ready;
     solitaire_setup setup(.clk(clk), 
-                          .rst(rst), 
-                          .deck(deck), 
+                          .rst(rst),
                           .stock_pile(stock_pile),
                           .talon_pile(talon_pile),
                           .tableau1(tableau1),
