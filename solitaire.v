@@ -41,16 +41,4 @@ module solitaire(clk, rst) begin
                           .tableau7(tableau7), 
                           .ready(setup_ready));
 
-
-    /* modules we need to write
-       - randomizer to fill the tableaus [x]
-       - input/output to terminal (could be separate) []
-       - lets user look at talon pile []
-       - lets user move card from tableau to tableau []
-       - lets user move card to foundation []
-       - lets user move card from talon to tableau/foundation []
-       - reveals a card once tableau has no visible cards []
-       - checks if u won or not []
-    */
-
 endmodule
