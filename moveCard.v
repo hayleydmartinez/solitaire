@@ -98,11 +98,12 @@ module moveCard(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tabl
 	endfunction
 
 
-	reg [6:0] sourceIndex = 19, destinationIndex = 19, i = 19;
+	reg [6:0] sourceIndex = 18, destinationIndex = 18, i = 18;
 
     always @(posedge clk) begin
     	if(ready) begin
     		//set all outputs to inputs
+    		successful = 0;
 
     		if(1 =< source && source =< 7 && 1 =< destination && destination =< 7) begin
     			currSource = getPile(source);
@@ -111,7 +112,7 @@ module moveCard(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tabl
     			offsetCounter = source_offset;
     			sourceLoopComplete = 0;
 
-    			for(i = 19; i >= 0; i = i - 1) begin
+    			for(i = 18; i >= 0; i = i - 1) begin
     				if(!sourceLoopComplete) begin
 	    				if(!offsetBegin && currSource[i*7] == 1) begin
 	    					offsetBegin = 1;
@@ -130,9 +131,36 @@ module moveCard(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tabl
     				end
     			end
 
-    			if(sourceLoopComplete) begin
-    				
+    			offsetBegin = 0;
+    			for(i = 18; i >= 0; i = i - 1) begin
+    				if(!offsetBegin && currSource[i*7] == 1) begin
+    					offsetBegin = 1;
+    					destinationIndex = i;
+    				end
+    			end
 
+    			if(sourceLoopComplete) begin
+    				if(((currSource[sourceIndex*7+2 -: 2] == CLUBS && (currDestination[destinationIndex*7+2 -: 2] == HEARTS || currDestination[destinationIndex*7+2 -: 2] == DIAMONDS))
+    				|| (currSource[sourceIndex*7+2 -: 2] == SPADES && (currDestination[destinationIndex*7+2 -: 2] == HEARTS || currDestination[destinationIndex*7+2 -: 2] == DIAMONDS))
+    				|| (currSource[sourceIndex*7+2 -: 2] == HEARTS && (currDestination[destinationIndex*7+2 -: 2] == SPADES || currDestination[destinationIndex*7+2 -: 2] == CLUBS))
+    				|| (currSource[sourceIndex*7+2 -: 2] == DIAMONDS && (currDestination[destinationIndex*7+2 -: 2] == SPADES || currDestination[destinationIndex*7+2 -: 2] == CLUBS)))
+    				&& currSource[sourceIndex*7+6 -: 4] + 1 == currDestination[destinationIndex*7+6 -: 4]) begin
+    					destinationIndex = destinationIndex + 1;
+
+    					if(sourceIndex > 0)
+    						currSource[(sourceIndex-1)*7] = 1;
+
+    					for(offsetCounter = 0; offsetCounter <= source_offset; offsetCounter = offsetCounter = offsetCounter + 1) begin
+    						currDestination[destinationIndex+6 -: 7] = currSource[sourceIndex+6 -: 7] | 7'b0000001;
+    						currSource[sourceIndex+6 -: 7] = 7'b0000000;
+    						destinationIndex = destinationIndex + 1;
+    						sourceIndex = sourceIndex + 1;
+    					end
+    				end
+
+    				setPile(source, currSource);
+    				setPile(destination, currDestination);
+    				successful = 1;
     			end
     		end
 
