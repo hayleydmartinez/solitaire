@@ -2,7 +2,8 @@
 
 ## TODO
 - input/output to terminal: Karthik (in progress)
-- lets user look at talon pile 
+- main game controller: Karthik (in progress)
+- lets user look at talon pile: Hayley (in progress) 
 - lets user move card to foundation 
 - reveals a card once tableau has no visible cards 
 - checks if u won or not 
