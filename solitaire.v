@@ -9,20 +9,20 @@ module solitaire(clk, rst) begin
     reg [6:0] foundation_cards [51:0];
 
     // side pile registers
-    reg [6:0] stock_pile [0:2]; // can be 3 cards shown at once
-    reg [6:0] talon_pile [0:23]; // will have 24 cards at beginning of game
+    reg [3 * CARD_SIZE - 1:0] stock_pile = 0; // can be 3 cards shown at once
+    reg [24 * CARD_SIZE - 1:0] talon_pile = 0; // will have 24 cards at beginning of game
 
     // card explanation
     // 4 bits: card rank; 2 bits: card suit; 1 bit: card visibility
 
     //tableau registers
-    reg [6:0] tableau1 [0:12];
-    reg [6:0] tableau2 [0:13];
-    reg [6:0] tableau3 [0:14];
-    reg [6:0] tableau4 [0:15];
-    reg [6:0] tableau5 [0:16];
-    reg [6:0] tableau6 [0:17];
-    reg [6:0] tableau7 [0:18];
+    reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau1 = 0;
+    reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau2 = 0;
+    reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau3 = 0;
+    reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau4 = 0;
+    reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau5 = 0;
+    reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau6 = 0;
+    reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau7 = 0;
 
     // if this is zero, you've won the game
     reg [44:0] covered_cards;

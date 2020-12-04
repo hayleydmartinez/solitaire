@@ -5,18 +5,18 @@ module setup(clk, rst, stock_pile, talon_pile, tableau1, tableau2, tableau3, tab
 
     output ready;
 
-    output reg [6:0] stock_pile [0:2]; 
-    output reg [6:0] talon_pile [0:23];
+    output reg [2 * CARD_SIZE - 1:0] stock_pile = 0; 
+    output reg [24 * CARD_SIZE - 1:0] talon_pile = 0;
 
-    output reg [6:0] tableau1 [0:12];
-    output reg [6:0] tableau2 [0:13];
-    output reg [6:0] tableau3 [0:14];
-    output reg [6:0] tableau4 [0:15];
-    output reg [6:0] tableau5 [0:16];
-    output reg [6:0] tableau6 [0:17];
-    output reg [6:0] tableau7 [0:18];
+    output reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau1 = 0;
+    output reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau2 = 0;
+    output reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau3 = 0;
+    output reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau4 = 0;
+    output reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau5 = 0;
+    output reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau6 = 0;
+    output reg [MAX_TABLEAU_SIZE * CARD_SIZE - 1:0] tableau7 = 0;
 
-    reg [6:0] deck [0:51];
+    reg [DECK_SIZE * CARD_SIZE - 1:0] deck = 0;
     reg deck_created;
 
     // create deck
@@ -34,6 +34,7 @@ module setup(clk, rst, stock_pile, talon_pile, tableau1, tableau2, tableau3, tab
 
     wire [2:0] random_tableau;
     wire [5:0] random_card;
+    reg [5:0] card;
     assign random_tableau = (seed_num % 7);
     assign random_card = (seed_num % 52);
 
@@ -45,13 +46,13 @@ module setup(clk, rst, stock_pile, talon_pile, tableau1, tableau2, tableau3, tab
     always @(posedge clk, posedge rst) begin
         if (rst || !deck_created) begin
             // initialize tableaus to 0
-            for (i = 0; i < 13; i = i+1) tableau1[i] = 6'b000000;
-            for (i = 0; i < 14; i = i+1) tableau2[i] = 6'b000000;
-            for (i = 0; i < 15; i = i+1) tableau3[i] = 6'b000000;
-            for (i = 0; i < 16; i = i+1) tableau4[i] = 6'b000000;
-            for (i = 0; i < 17; i = i+1) tableau5[i] = 6'b000000;
-            for (i = 0; i < 18; i = i+1) tableau6[i] = 6'b000000;
-            for (i = 0; i < 19; i = i+1) tableau7[i] = 6'b000000;
+            tableau1 = 0;
+            tableau2 = 0;
+            tableau3 = 0;
+            tableau4 = 0;
+            tableau5 = 0;
+            tableau6 = 0;
+            tableau7 = 0;
             
             // initialize tableau counts to 0
             for (i = 0; i < 7; i = i+1) curr_count[i] = 3'b000;
@@ -63,28 +64,64 @@ module setup(clk, rst, stock_pile, talon_pile, tableau1, tableau2, tableau3, tab
             full_count = 0;
         end
 
+        card = random_card;
+
         // if the tableau isn't full and that card is present, and there are still cards in the deck
-        if ((!tableaus_created) && (curr_count[random_tableau] != max_count[random_tableau]) && deck[random_card] != 6'b000000) begin
+        if ((!tableaus_created) && (curr_count[random_tableau] != max_count[random_tableau]) && deck[card * CARD_SIZE +: CARD_SIZE - 1] != 6'b000000) begin
             tableau_index = curr_count[random_tableau];
             tableau_max = max_count[random_tableau];
             case(random_tableau)
-                3'b000: tableau1[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
-                3'b001: tableau2[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
-                3'b010: tableau3[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
-                3'b011: tableau4[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
-                3'b100: tableau5[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
-                3'b101: tableau6[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
-                3'b110: tableau7[tableau_index] = (tableau_index == tableau_max - 1) ? (deck[random_card] | 6'b000001) : deck[random_card];
+                3'b000: begin
+                    if (tableau_index == tableau_max - 1)
+                        tableau1[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = (deck[card * CARD_SIZE +: CARD_SIZE - 1] | 6'b000001);
+                    else
+                        tableau1[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = deck[card * CARD_SIZE +: CARD_SIZE - 1];
+                end
+                3'b001: begin
+                    if (tableau_index == tableau_max - 1)
+                        tableau2[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = (deck[card * CARD_SIZE +: CARD_SIZE - 1] | 6'b000001);
+                    else
+                        tableau2[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = deck[card * CARD_SIZE +: CARD_SIZE - 1];
+                end
+                3'b010: begin
+                    if (tableau_index == tableau_max - 1)
+                        tableau3[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = (deck[card * CARD_SIZE +: CARD_SIZE - 1] | 6'b000001);
+                    else
+                        tableau3[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = deck[card * CARD_SIZE +: CARD_SIZE - 1];
+                end
+                3'b011: begin
+                    if (tableau_index == tableau_max - 1)
+                        tableau4[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = (deck[card * CARD_SIZE +: CARD_SIZE - 1] | 6'b000001);
+                    else
+                        tableau4[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = deck[card * CARD_SIZE +: CARD_SIZE - 1];
+                end
+                3'b100: begin
+                    if (tableau_index == tableau_max - 1)
+                        tableau5[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = (deck[card * CARD_SIZE +: CARD_SIZE - 1] | 6'b000001);
+                    else
+                        tableau5[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = deck[card * CARD_SIZE +: CARD_SIZE - 1];
+                end
+                3'b101: begin
+                    if (tableau_index == tableau_max - 1)
+                        tableau6[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = (deck[card * CARD_SIZE +: CARD_SIZE - 1] | 6'b000001);
+                    else
+                        tableau6[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = deck[card * CARD_SIZE +: CARD_SIZE - 1];
+                end
+                3'b110: begin
+                    if (tableau_index == tableau_max - 1)
+                        tableau7[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = (deck[card * CARD_SIZE +: CARD_SIZE - 1] | 6'b000001);
+                    else
+                        tableau7[tableau_index * CARD_SIZE +: CARD_SIZE - 1] = deck[card * CARD_SIZE +: CARD_SIZE - 1];
+                end
                 default: 
             endcase
-            deck[random_card] = 6'b000000;
+            deck[card * CARD_SIZE +: CARD_SIZE - 1] = 6'b000000;
             curr_count[random_tableau] = curr_count[random_tableau] + 1;
             full_count = (tableau_index == tableau_max - 1) ? full_count + 1 : full_count;
         end
     end
 
     // populate stock pile and talon pile
-    integer i;
     reg [1:0] stock_count;
     reg [4:0] talon_count;
     reg [5:0] deck_index;
@@ -92,8 +129,8 @@ module setup(clk, rst, stock_pile, talon_pile, tableau1, tableau2, tableau3, tab
 
     always @(posedge clk, posedge rst) begin
         if (rst || !tableaus_created) begin
-            for (i = 0; i < 3; i = i+1) stock_pile[i] = 6'b000000;
-            for (i = 0; i < 24; i = i+1) talon_pile[i] = 6'b000000;
+            stock_pile = 0;
+            talon_pile = 0;
 
             stock_count = 0;
             talon_count = 0;
@@ -102,17 +139,17 @@ module setup(clk, rst, stock_pile, talon_pile, tableau1, tableau2, tableau3, tab
 
         // fill stock pile first
         if (stock_count != 3) begin
-            if (deck[deck_index] != 0) begin
+            if (deck[deck_index * CARD_SIZE +: CARD_SIZE - 1] != 0) begin
                 // remember: all of the cards in the stock pile are visible
-                stock_pile[stock_count] = deck[deck_index] | 6'b000001;
+                stock_pile[stock_count * CARD_SIZE +: CARD_SIZE - 1] = deck[deck_index * CARD_SIZE +: CARD_SIZE - 1] | 6'b000001;
                 stock_count = stock_count + 1;
             end
             deck_index = deck_index + 1;
         end
         // file talon pile second
         else if (talon_count != 24) begin
-            if (deck[deck_index] != 0) begin
-                talon_pile[talon_count] = deck[deck_index];
+            if (deck[deck_index * CARD_SIZE +: CARD_SIZE - 1] != 0) begin
+                talon_pile[talon_count * CARD_SIZE +: CARD_SIZE - 1] = deck[deck_index  * CARD_SIZE +: CARD_SIZE - 1];
                 talon_count = talon_count + 1;
             end
             deck_index = deck_index + 1;
@@ -125,7 +162,7 @@ endmodule
 
 module make_deck(clk, rst, deck, finished) begin
     input clk, rst;
-    output reg [6:0] deck [0:51];
+    output reg [DECK_SIZE * CARD_SIZE - 1:0] deck = 0;
 
     reg [6:0] current_card;
     reg [5:0] deck_count = 0;
@@ -147,28 +184,29 @@ module make_deck(clk, rst, deck, finished) begin
             current_card[6:3] = rank_count;
             current_card[2:1] = HEARTS;
             current_card[0]   = 0;
-            deck[deck_count] = current_card;
+            deck[deck_count * CARD_SIZE +: CARD_SIZE - 1] = current_card;
             rank_count = rank_count + 1;
+            deck_count = deck_count + 1;
 
             current_card[6:3] = rank_count;
             current_card[2:1] = SPADES;
             current_card[0]   = 0;
-            deck[deck_count] = current_card;
+            deck[deck_count * CARD_SIZE +: CARD_SIZE - 1] = current_card;
             rank_count = rank_count + 1;
+            deck_count = deck_count + 1;
 
             current_card[6:3] = rank_count;
             current_card[2:1] = DIAMONDS;
             current_card[0]   = 0;
-            deck[deck_count] = current_card;
+            deck[deck_count * CARD_SIZE +: CARD_SIZE - 1] = current_card;
             rank_count = rank_count + 1;
 
             current_card[6:3] = rank_count;
             current_card[2:1] = CLUBS;
             current_card[0]   = 0;
-            deck[deck_count] = current_card;
+            deck[deck_count * CARD_SIZE +: CARD_SIZE - 1] = current_card;
             rank_count = rank_count + 1;
-
-            deck_count = deck_count + 4;
+            deck_count = deck_count + 1;
         end
     end
 end
