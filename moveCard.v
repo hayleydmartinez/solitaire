@@ -1,21 +1,23 @@
-`include "parameters.v"
+module moveCard(clk, rst, stock_pile_input, talon_pile_input, tableau1_input, tableau2_input, tableau3_input, tableau4_input, tableau5_input, tableau6_input, tableau7_input, ready, 
+				source, source_offset, destination, successful, stock_pile, talon_pile, tableau1, tableau2, tableau3, tableau4, tableau5, tableau6, tableau7, foundation_cards, move_ready);	
+	parameter HEARTS = 2'b00;
+	parameter CLUBS = 2'b01;
+	parameter DIAMONDS = 2'b10;
+	parameter SPADES = 2'b11;
 
-module moveCard(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tableau3, tableau4, tableau5, tableau6, tableau7, ready)
+
     input clk, rst;
-    input [6:0] deck [0:51];
-    input ready;
 
-    input [6:0] stock_pile_input [0:2]; 
-    input [6:0] talon_pile_input [0:23];
+    input [24*7-1:0] stock_pile_input; 
+    input [24*7-1:0] talon_pile_input;
 
-    input [6:0] tableau1_input [0:12];
-    input [6:0] tableau2_input [0:13];
-    input [6:0] tableau3_input [0:14];
-    input [6:0] tableau4_input [0:15];
-    input [6:0] tableau5_input [0:16];
-    input [6:0] tableau6_input [0:17];
-    input [6:0] tableau7_input [0:18];
-    input [6:0] foundation_cards_input [51:0];
+    input [19*7-1:0] tableau1_input;
+    input [19*7-1:0] tableau2_input;
+    input [19*7-1:0] tableau3_input;
+    input [19*7-1:0] tableau4_input;
+    input [19*7-1:0] tableau5_input;
+    input [19*7-1:0] tableau6_input;
+    input [19*7-1:0] tableau7_input;
 
     input ready;
     input [3:0] source; //which place to pull card from
@@ -26,9 +28,9 @@ module moveCard(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tabl
     reg [19*7-1:0] currSource = 0;
     reg [19*7-1:0] currDestination = 0;
 
-    output reg successful = 0;
-    output reg [6:0] stock_pile [0:2] = 0; 
-    output reg [6:0] talon_pile [0:23] = 0;
+    output reg successful = 1;
+    output reg [24*7-1:0] stock_pile = 0; 
+    output reg [24*7-1:0] talon_pile = 0;
 
     output reg [19*7-1:0] tableau1 = 0;
     output reg [19*7-1:0] tableau2 = 0;
@@ -37,32 +39,34 @@ module moveCard(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tabl
     output reg [19*7-1:0] tableau5 = 0;
     output reg [19*7-1:0] tableau6 = 0;
     output reg [19*7-1:0] tableau7 = 0;
-    output reg [6:0] foundation_cards [51:0] = 0;
+    output reg [4*7-1:0] foundation_cards = 0;
+
+    output reg move_ready = 0;
 
 
     function [19*7-1:0] getPile (input [3:0] deckNumber);
 	    begin
 	    	case (deckNumber)
 	    		1: begin
-	    			getPile = tableau1_input;
+	    			getPile = tableau1;
 	    		end
 	    		2: begin
-	    			getPile = tableau2_input;
+	    			getPile = tableau2;
 	    		end
 	    		3: begin
-	    			getPile = tableau3_input;
+	    			getPile = tableau3;
 	    		end
 	    		4: begin
-	    			getPile = tableau4_input;
+	    			getPile = tableau4;
 	    		end
 	    		5: begin
-	    			getPile = tableau5_input;
+	    			getPile = tableau5;
 	    		end
 	    		6: begin
-	    			getPile = tableau6_input;
+	    			getPile = tableau6;
 	    		end
 	    		7: begin
-	    			getPile = tableau7_input;
+	    			getPile = tableau7;
 	    		end
 	    	endcase
 	    end
@@ -99,20 +103,35 @@ module moveCard(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tabl
 
 
 	reg [6:0] sourceIndex = 18, destinationIndex = 18, i = 18;
+	reg [3:0] offsetCounter = 0;
+	reg offsetBegin = 0, sourceLoopComplete = 0;
+	reg [1:0] setPileOutput;
 
-    always @(posedge clk) begin
-    	if(ready) begin
-    		//set all outputs to inputs
+    always @(clk) begin
+	    if(ready & !clk & !move_ready) begin
+	    	stock_pile = stock_pile_input;
+	    	talon_pile = talon_pile_input;
+	    	tableau1 = tableau1_input;
+	    	tableau2 = tableau2_input;
+	    	tableau3 = tableau3_input;
+	    	tableau4 = tableau4_input;
+	    	tableau5 = tableau5_input;
+	    	tableau6 = tableau6_input;
+	    	tableau7 = tableau7_input;
+	    	move_ready = 1;
+    	end
+    	else if(ready & !clk) begin
+	    	move_ready = 0;
     		successful = 0;
 
-    		if(1 =< source && source =< 7 && 1 =< destination && destination =< 7) begin
+    		if(0 < source && source < 8 && 0 < destination && destination < 8) begin
     			currSource = getPile(source);
     			currDestination = getPile(destination);
     			offsetBegin = 0;
     			offsetCounter = source_offset;
     			sourceLoopComplete = 0;
 
-    			for(i = 18; i >= 0; i = i - 1) begin
+    			for(i = 18; i != 0; i = i - 1) begin
     				if(!sourceLoopComplete) begin
 	    				if(!offsetBegin && currSource[i*7] == 1) begin
 	    					offsetBegin = 1;
@@ -130,14 +149,36 @@ module moveCard(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tabl
 	    				end
     				end
     			end
+    			//For i == 0
+				if(!sourceLoopComplete) begin
+    				if(!offsetBegin && currSource[i*7] == 1) begin
+    					offsetBegin = 1;
+    				end
+    				else if(offsetBegin && currSource[i*7] == 1) begin
+    					offsetCounter = offsetCounter - 1;
+    				end
+    				else if(offsetBegin && currSource[i*7] == 0) begin
+    					//invalid input
+    				end
+
+    				if(offsetBegin && offsetCounter == 0) begin
+    					sourceLoopComplete = 1;
+    					sourceIndex = i;
+    				end
+				end
 
     			offsetBegin = 0;
-    			for(i = 18; i >= 0; i = i - 1) begin
-    				if(!offsetBegin && currSource[i*7] == 1) begin
+    			for(i = 18; i != 0; i = i - 1) begin
+    				if(!offsetBegin && currDestination[i*7] == 1) begin
     					offsetBegin = 1;
     					destinationIndex = i;
     				end
     			end
+    			//For i == 0
+				if(!offsetBegin && currDestination[i*7] == 1) begin
+					offsetBegin = 1;
+					destinationIndex = i;
+				end
 
     			if(sourceLoopComplete) begin
     				if(((currSource[sourceIndex*7+2 -: 2] == CLUBS && (currDestination[destinationIndex*7+2 -: 2] == HEARTS || currDestination[destinationIndex*7+2 -: 2] == DIAMONDS))
@@ -148,22 +189,117 @@ module moveCard(clk, rst, deck, stock_pile, talon_pile, tableau1, tableau2, tabl
     					destinationIndex = destinationIndex + 1;
 
     					if(sourceIndex > 0)
-    						currSource[(sourceIndex-1)*7] = 1;
+    						currSource[(sourceIndex-1)*7] = 1'b1;
 
-    					for(offsetCounter = 0; offsetCounter <= source_offset; offsetCounter = offsetCounter = offsetCounter + 1) begin
-    						currDestination[destinationIndex+6 -: 7] = currSource[sourceIndex+6 -: 7] | 7'b0000001;
-    						currSource[sourceIndex+6 -: 7] = 7'b0000000;
+    					for(offsetCounter = 0; offsetCounter <= source_offset; offsetCounter = offsetCounter + 1) begin
+    						currDestination[destinationIndex*7+6 -: 7] = currSource[sourceIndex*7+6 -: 7] | 7'b0000001;
+    						currSource[sourceIndex*7+6 -: 7] = 7'b0000000;
     						destinationIndex = destinationIndex + 1;
     						sourceIndex = sourceIndex + 1;
     					end
-    				end
 
-    				setPile(source, currSource);
-    				setPile(destination, currDestination);
+	    				setPileOutput = setPile(source, currSource);
+	    				setPileOutput = setPile(destination, currDestination);
+	    				successful = 1;
+    				end
+    			end
+    		end
+
+    		else if(0 == source && 0 < destination && destination < 8 && talon_pile != 0) begin
+    			currDestination = getPile(destination);
+
+    			offsetBegin = 0;
+    			for(i = 24; i != 0; i = i - 1) begin
+    				if(!offsetBegin && talon_pile[(i-1)*7] == 1) begin
+    					offsetBegin = 1;
+    					sourceIndex = i-1;
+    				end
+    			end
+
+    			offsetBegin = 0;
+    			for(i = 19; i != 0; i = i - 1) begin
+    				if(!offsetBegin && currDestination[(i-1)*7] == 1) begin
+    					offsetBegin = 1;
+    					destinationIndex = i-1;
+    				end
+    			end
+
+    			if(sourceLoopComplete) begin
+    				if(((talon_pile[sourceIndex*7+2 -: 2] == CLUBS && (currDestination[destinationIndex*7+2 -: 2] == HEARTS || currDestination[destinationIndex*7+2 -: 2] == DIAMONDS))
+    				|| (talon_pile[sourceIndex*7+2 -: 2] == SPADES && (currDestination[destinationIndex*7+2 -: 2] == HEARTS || currDestination[destinationIndex*7+2 -: 2] == DIAMONDS))
+    				|| (talon_pile[sourceIndex*7+2 -: 2] == HEARTS && (currDestination[destinationIndex*7+2 -: 2] == SPADES || currDestination[destinationIndex*7+2 -: 2] == CLUBS))
+    				|| (talon_pile[sourceIndex*7+2 -: 2] == DIAMONDS && (currDestination[destinationIndex*7+2 -: 2] == SPADES || currDestination[destinationIndex*7+2 -: 2] == CLUBS)))
+    				&& talon_pile[sourceIndex*7+6 -: 4] + 1 == currDestination[destinationIndex*7+6 -: 4]) begin
+    					destinationIndex = destinationIndex + 1;
+
+						currDestination[destinationIndex*7+6 -: 7] = talon_pile[sourceIndex*7+6 -: 7];
+						talon_pile[sourceIndex*7+6 -: 7] = 7'b0000000;
+
+	    				setPileOutput = setPile(destination, currDestination);
+	    				successful = 1;
+    				end
+    			end
+    		end
+
+    		else if(0 == source && 0 == destination && talon_pile != 0) begin
+    			offsetBegin = 0;
+    			for(i = 24; i != 0; i = i - 1) begin
+    				if(!offsetBegin && talon_pile[(i-1)*7] == 1) begin
+    					offsetBegin = 1;
+    					sourceIndex = i-1;
+    				end
+    			end
+
+    			destinationIndex = 0;
+    			destinationIndex[1:0] = talon_pile[sourceIndex+2 -: 2];
+
+    			if(foundation_cards[destinationIndex*7+6 -: 4] + 1 == talon_pile[sourceIndex*7+6 -: 4]) begin
+    				foundation_cards[destinationIndex*7+6 -: 7] = talon_pile[sourceIndex*7+6 -: 7];
+    				talon_pile[sourceIndex*7+6 -: 7] = 7'b0000000;
     				successful = 1;
     			end
     		end
 
+    		else if(0 < source && source < 8 && 0 == destination) begin
+    			currSource = getPile(source);
+    			offsetBegin = 0;
+    			for(i = 19; i != 0; i = i - 1) begin
+    				if(!offsetBegin && currSource[(i-1)*7] == 1) begin
+    					offsetBegin = 1;
+    					sourceIndex = i-1;
+    				end
+    			end
+
+    			destinationIndex = 0;
+    			destinationIndex[1:0] = currSource[sourceIndex+2 -: 2];
+
+    			if(foundation_cards[destinationIndex*7+6 -: 4] + 1 == currSource[sourceIndex*7+6 -: 4]) begin
+    				foundation_cards[destinationIndex*7+6 -: 7] = currSource[sourceIndex*7+6 -: 7];
+    				currSource[sourceIndex*7+6 -: 7] = 7'b0000000;
+	    			setPileOutput = setPile(source, currSource);
+    				successful = 1;
+    			end
+    		end
+
+    		else if(8 == source) begin
+    			if(stock_pile == 0) begin
+    				stock_pile = talon_pile;
+    				talon_pile = 0;
+    			end
+    			offsetBegin = 0;
+    			for(i = 0; i < 24; i = i+1) begin
+    				if(!offsetBegin && stock_pile[i*7] == 1) begin
+    					offsetBegin = 1;
+    					sourceIndex = i;
+    				end
+    			end
+    			
+    			talon_pile[sourceIndex*7+6 -: 7] = stock_pile[sourceIndex*7+6 -: 7];
+    			stock_pile[sourceIndex*7+6 -: 7] = 7'b0000000;
+
+	    		successful = 1;
+    		end
+	    	move_ready = 1;
     	end
     end
 
