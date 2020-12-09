@@ -1,0 +1,159 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dC:/Users/Aseem/Desktop/152blab4
+vinputOutput
+Z0 !s110 1607493056
+!i10b 1
+!s100 hUzUamEJCS8=BzE<HLAz61
+I:LS=`[h:Hm`m2l?Mf@9Z03
+Z1 VDg1SIo80bB@j0V0VzS_@n1
+Z2 dC:/Users/Aseem/Desktop/solitaire
+w1607493036
+8C:/Users/Aseem/Desktop/solitaire/inputOutput.v
+FC:/Users/Aseem/Desktop/solitaire/inputOutput.v
+L0 1
+Z3 OP;L;10.4a;61
+r1
+!s85 0
+31
+Z4 !s108 1607493056.000000
+!s107 C:/Users/Aseem/Desktop/solitaire/inputOutput.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/Aseem/Desktop/solitaire/inputOutput.v|
+!s101 -O0
+!i113 1
+Z5 o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
+ninput@output
+vmake_deck
+R0
+!i10b 1
+!s100 i4i_TOQ:lb@8]ddH<f5Bf0
+I6LQQ9P7Tlm@8;;?SjCik90
+R1
+R2
+Z6 w1607476551
+Z7 8C:/Users/Aseem/Desktop/solitaire/setupTest.v
+Z8 FC:/Users/Aseem/Desktop/solitaire/setupTest.v
+L0 126
+R3
+r1
+!s85 0
+31
+R4
+Z9 !s107 C:/Users/Aseem/Desktop/solitaire/setupTest.v|
+Z10 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/Aseem/Desktop/solitaire/setupTest.v|
+!s101 -O0
+!i113 1
+R5
+vmoveCard
+R0
+!i10b 1
+!s100 boI8DmXJT:OW<0RT06gz71
+I5U@T_Jll?Y]2ZhcM>=^ng3
+R1
+R2
+w1607239375
+8C:/Users/Aseem/Desktop/solitaire/moveCard.v
+FC:/Users/Aseem/Desktop/solitaire/moveCard.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:/Users/Aseem/Desktop/solitaire/moveCard.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/Aseem/Desktop/solitaire/moveCard.v|
+!s101 -O0
+!i113 1
+R5
+nmove@card
+vrandom_number
+!s110 1607064366
+!i10b 1
+!s100 Ufe;>1FIUP_WWX@8zLgBI3
+Ig_EP]Y>_OQISY14DCMie11
+R1
+R2
+w1607063925
+R7
+R8
+L0 173
+R3
+r1
+!s85 0
+31
+!s108 1607064366.000000
+R9
+R10
+!s101 -O0
+!i113 1
+R5
+vsetup
+R0
+!i10b 1
+!s100 U8IbBHfH]GWjL^ZHSOG0H2
+IjG2OD@T4UE?GOO`T8_INN2
+R1
+R2
+R6
+R7
+R8
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+R9
+R10
+!s101 -O0
+!i113 1
+R5
+vsolitaire
+R0
+!i10b 1
+!s100 OGC6VkO[<m`jni][iMPMI1
+ImN@Nmo;KCV<_Kf3IjJ8cl1
+R1
+R2
+w1607235133
+8C:/Users/Aseem/Desktop/solitaire/solitaireTest.v
+FC:/Users/Aseem/Desktop/solitaire/solitaireTest.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:/Users/Aseem/Desktop/solitaire/solitaireTest.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/Aseem/Desktop/solitaire/solitaireTest.v|
+!s101 -O0
+!i113 1
+R5
+vsolitaire_tb
+R0
+!i10b 1
+!s100 1?PHF6QV^19B0zR2;[cOD3
+I_`8ZI28FnMI^jiYT8Y?fU0
+R1
+R2
+w1607063538
+8C:/Users/Aseem/Desktop/solitaire/solitaire_tb.v
+FC:/Users/Aseem/Desktop/solitaire/solitaire_tb.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:/Users/Aseem/Desktop/solitaire/solitaire_tb.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/Aseem/Desktop/solitaire/solitaire_tb.v|
+!s101 -O0
+!i113 1
+R5
