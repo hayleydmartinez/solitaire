@@ -1,0 +1,37 @@
+C:/Users/Aseem/Desktop/solitaire/solitaire_tb.v {1 {vlog -work work -stats=none C:/Users/Aseem/Desktop/solitaire/solitaire_tb.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module solitaire_tb
+
+Top level modules:
+	solitaire_tb
+
+} {} {}} C:/Users/Aseem/Desktop/solitaire/moveCard.v {1 {vlog -work work -stats=none C:/Users/Aseem/Desktop/solitaire/moveCard.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module moveCard
+
+Top level modules:
+	moveCard
+
+} {} {}} C:/Users/Aseem/Desktop/solitaire/setupTest.v {1 {vlog -work work -stats=none C:/Users/Aseem/Desktop/solitaire/setupTest.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module setup
+-- Compiling module make_deck
+
+Top level modules:
+	setup
+
+} {} {}} C:/Users/Aseem/Desktop/solitaire/inputOutput.v {1 {vlog -work work -stats=none C:/Users/Aseem/Desktop/solitaire/inputOutput.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module inputOutput
+
+Top level modules:
+	inputOutput
+
+} {} {}} C:/Users/Aseem/Desktop/solitaire/solitaireTest.v {1 {vlog -work work -stats=none C:/Users/Aseem/Desktop/solitaire/solitaireTest.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module solitaire
+
+Top level modules:
+	solitaire
+
+} {} {}}
