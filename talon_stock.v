@@ -1,6 +1,6 @@
 // `include "parameters.v"
 
-module talon_stock_functionality(
+module talon_stock(
     input clk,
     input rst,
     input check_pile,
