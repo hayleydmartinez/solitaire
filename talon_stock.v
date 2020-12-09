@@ -21,7 +21,10 @@ module talon_stock_functionality(
         end
 
         if (check_pile) begin
-            if (talon_size_init == 0) begin
+            if ((talon_size_init == 0) && (stock_size_init == 0)) begin
+                // do nothing, no cards in either
+            end
+            else if (talon_size_init == 0) begin
                 talon_pile <= stock_pile_init;
                 stock_pile <= 0;
                 talon_size <= stock_size_init;
