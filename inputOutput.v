@@ -87,167 +87,187 @@ module inputOutput(clk, rst, stock_pile, talon_pile, tableau1, tableau2, tableau
 		if(clk & ready) begin
 			input_ready = 0;
 
-			if(!successful)
-				$fwrite('h8000_0001, "Invalid move, try again\n");
+			if(foundation_cards == 28'b1101111110110111010111101001) begin
+				$fwrite('h8000_0001, "YOU WIN! CONGRATS!!!\n\n");
 
-			$fwrite('h8000_0001, "TALON PILE\n-----------\n");
-			talon_count = 0;
-			if(talon_pile != 0) begin
-		        for (i = 24; i != 0; i = i-1) begin
-		        	if(talon_count < 3 && talon_pile[(i-1)*7] == 1) begin
-		        		writeCardOutput = writeCard(talon_pile[(i-1)*7+6 -: 7]);
-		        		talon_count = talon_count + 1;
+				$fwrite('h8000_0001, "FOUNDATION PILES\n-----------\n");
+		        for (i = 0; i < 4; i = i+1) begin
+		        	if(foundation_cards[i*7+6 -: 7] != 0) begin
+		        		writeCardOutput = writeCard(foundation_cards[i*7+6 -: 7]);
 		        	end
+		        	else
+		        		$fwrite('h8000_0001, "[X]");
 		        end
-	        end
-	        else
-				$fwrite('h8000_0001, "No cards in talon pile yet");
-			$fwrite('h8000_0001, "\n");
+				$fwrite('h8000_0001, "\n\n");
+			end
+			else begin
+				if(!successful)
+					$fwrite('h8000_0001, "Invalid move, try again\n");
 
-			$fwrite('h8000_0001, "TABLEAUS\n-----------\n");
-			tableauStarted = 0;
-			tableauComplete = 0;
-			currTableau = tableau1;
-			$fwrite('h8000_0001, "T1: ");
-			if(currTableau != 0) begin
-		        for (i = 0; i < 19; i = i+1) begin
-		        	if(currTableau[i*7] == 1)
-		        		tableauStarted = 1;
-		        	else if(tableauStarted)
-		        		tableauComplete = 1;
-
-		        	if(!tableauComplete)
-		        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+				$fwrite('h8000_0001, "TALON PILE\n-----------\n");
+				talon_count = 0;
+				if(talon_pile != 0) begin
+			        for (i = 24; i != 0; i = i-1) begin
+			        	if(talon_count < 3 && talon_pile[(i-1)*7] == 1) begin
+			        		writeCardOutput = writeCard(talon_pile[(i-1)*7+6 -: 7]);
+			        		talon_count = talon_count + 1;
+			        	end
+			        end
 		        end
-	        end
+		        else
+					$fwrite('h8000_0001, "No cards in talon pile yet");
+				$fwrite('h8000_0001, "\n\n");
 
-			$fwrite('h8000_0001, "\n");
-			tableauStarted = 0;
-			tableauComplete = 0;
-			currTableau = tableau2;
-			$fwrite('h8000_0001, "T2: ");
-			if(currTableau != 0) begin
-		        for (i = 0; i < 19; i = i+1) begin
-		        	if(currTableau[i*7] == 1)
-		        		tableauStarted = 1;
-		        	else if(tableauStarted)
-		        		tableauComplete = 1;
+				$fwrite('h8000_0001, "TABLEAUS\n-----------\n");
+				tableauStarted = 0;
+				tableauComplete = 0;
+				currTableau = tableau1;
+				$fwrite('h8000_0001, "T1: ");
+				if(currTableau != 0) begin
+			        for (i = 0; i < 19; i = i+1) begin
+			        	if(currTableau[i*7] == 1)
+			        		tableauStarted = 1;
+			        	else if(tableauStarted)
+			        		tableauComplete = 1;
 
-		        	if(!tableauComplete)
-		        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        	if(!tableauComplete)
+			        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        end
 		        end
-	        end
 
-			$fwrite('h8000_0001, "\n");
-			tableauStarted = 0;
-			tableauComplete = 0;
-			currTableau = tableau3;
-			$fwrite('h8000_0001, "T3: ");
-			if(currTableau != 0) begin
-		        for (i = 0; i < 19; i = i+1) begin
-		        	if(currTableau[i*7] == 1)
-		        		tableauStarted = 1;
-		        	else if(tableauStarted)
-		        		tableauComplete = 1;
+				$fwrite('h8000_0001, "\n");
+				tableauStarted = 0;
+				tableauComplete = 0;
+				currTableau = tableau2;
+				$fwrite('h8000_0001, "T2: ");
+				if(currTableau != 0) begin
+			        for (i = 0; i < 19; i = i+1) begin
+			        	if(currTableau[i*7] == 1)
+			        		tableauStarted = 1;
+			        	else if(tableauStarted)
+			        		tableauComplete = 1;
 
-		        	if(!tableauComplete)
-		        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        	if(!tableauComplete)
+			        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        end
 		        end
-	        end
 
-			$fwrite('h8000_0001, "\n");
-			tableauStarted = 0;
-			tableauComplete = 0;
-			currTableau = tableau4;
-			$fwrite('h8000_0001, "T4: ");
-			if(currTableau != 0) begin
-		        for (i = 0; i < 19; i = i+1) begin
-		        	if(currTableau[i*7] == 1)
-		        		tableauStarted = 1;
-		        	else if(tableauStarted)
-		        		tableauComplete = 1;
+				$fwrite('h8000_0001, "\n");
+				tableauStarted = 0;
+				tableauComplete = 0;
+				currTableau = tableau3;
+				$fwrite('h8000_0001, "T3: ");
+				if(currTableau != 0) begin
+			        for (i = 0; i < 19; i = i+1) begin
+			        	if(currTableau[i*7] == 1)
+			        		tableauStarted = 1;
+			        	else if(tableauStarted)
+			        		tableauComplete = 1;
 
-		        	if(!tableauComplete)
-		        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        	if(!tableauComplete)
+			        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        end
 		        end
-	        end
 
-			$fwrite('h8000_0001, "\n");
-			tableauStarted = 0;
-			tableauComplete = 0;
-			currTableau = tableau5;
-			$fwrite('h8000_0001, "T5: ");
-			if(currTableau != 0) begin
-		        for (i = 0; i < 19; i = i+1) begin
-		        	if(currTableau[i*7] == 1)
-		        		tableauStarted = 1;
-		        	else if(tableauStarted)
-		        		tableauComplete = 1;
+				$fwrite('h8000_0001, "\n");
+				tableauStarted = 0;
+				tableauComplete = 0;
+				currTableau = tableau4;
+				$fwrite('h8000_0001, "T4: ");
+				if(currTableau != 0) begin
+			        for (i = 0; i < 19; i = i+1) begin
+			        	if(currTableau[i*7] == 1)
+			        		tableauStarted = 1;
+			        	else if(tableauStarted)
+			        		tableauComplete = 1;
 
-		        	if(!tableauComplete)
-		        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        	if(!tableauComplete)
+			        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        end
 		        end
-	        end
 
-			$fwrite('h8000_0001, "\n");
-			tableauStarted = 0;
-			tableauComplete = 0;
-			currTableau = tableau6;
-			$fwrite('h8000_0001, "T6: ");
-			if(currTableau != 0) begin
-		        for (i = 0; i < 19; i = i+1) begin
-		        	if(currTableau[i*7] == 1)
-		        		tableauStarted = 1;
-		        	else if(tableauStarted)
-		        		tableauComplete = 1;
+				$fwrite('h8000_0001, "\n");
+				tableauStarted = 0;
+				tableauComplete = 0;
+				currTableau = tableau5;
+				$fwrite('h8000_0001, "T5: ");
+				if(currTableau != 0) begin
+			        for (i = 0; i < 19; i = i+1) begin
+			        	if(currTableau[i*7] == 1)
+			        		tableauStarted = 1;
+			        	else if(tableauStarted)
+			        		tableauComplete = 1;
 
-		        	if(!tableauComplete)
-		        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        	if(!tableauComplete)
+			        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        end
 		        end
-	        end
 
-			$fwrite('h8000_0001, "\n");
-			tableauStarted = 0;
-			tableauComplete = 0;
-			currTableau = tableau7;
-			$fwrite('h8000_0001, "T7: ");
-			if(currTableau != 0) begin
-		        for (i = 0; i < 19; i = i+1) begin
-		        	if(currTableau[i*7] == 1)
-		        		tableauStarted = 1;
-		        	else if(tableauStarted)
-		        		tableauComplete = 1;
+				$fwrite('h8000_0001, "\n");
+				tableauStarted = 0;
+				tableauComplete = 0;
+				currTableau = tableau6;
+				$fwrite('h8000_0001, "T6: ");
+				if(currTableau != 0) begin
+			        for (i = 0; i < 19; i = i+1) begin
+			        	if(currTableau[i*7] == 1)
+			        		tableauStarted = 1;
+			        	else if(tableauStarted)
+			        		tableauComplete = 1;
 
-		        	if(!tableauComplete)
-		        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        	if(!tableauComplete)
+			        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        end
 		        end
-	        end
-			$fwrite('h8000_0001, "\n");
 
-			$fwrite('h8000_0001, "FOUNDATION PILES\n-----------\n");
-	        for (i = 0; i < 4; i = i+1) begin
-	        	if(foundation_cards[i*7+6 -: 7] != 0) begin
-	        		writeCardOutput = writeCard(foundation_cards[i*7+6 -: 7]);
-	        	end
-	        	else
-	        		$fwrite('h8000_0001, "[X]");
-	        end
-			$fwrite('h8000_0001, "\n");
+				$fwrite('h8000_0001, "\n");
+				tableauStarted = 0;
+				tableauComplete = 0;
+				currTableau = tableau7;
+				$fwrite('h8000_0001, "T7: ");
+				if(currTableau != 0) begin
+			        for (i = 0; i < 19; i = i+1) begin
+			        	if(currTableau[i*7] == 1)
+			        		tableauStarted = 1;
+			        	else if(tableauStarted)
+			        		tableauComplete = 1;
 
-			$fwrite('h8000_0001, "Which tableau would you like to move from?\n");
-			userInput = $fgetc('h8000_0000);
-			$fgetc('h8000_0000);
-			source = tableauNum(userInput);
+			        	if(!tableauComplete)
+			        		writeCardOutput = writeCard(currTableau[i*7+6 -: 7]);
+			        end
+		        end
+				$fwrite('h8000_0001, "\n\n");
 
-			$fwrite('h8000_0001, "How many cards would you like to move from the source?\n");
-			userInput = $fgetc('h8000_0000);
-			$fgetc('h8000_0000);
-			source_offset = tableauNum(userInput);
+				$fwrite('h8000_0001, "FOUNDATION PILES\n-----------\n");
+		        for (i = 0; i < 4; i = i+1) begin
+		        	if(foundation_cards[i*7+6 -: 7] != 0) begin
+		        		writeCardOutput = writeCard(foundation_cards[i*7+6 -: 7]);
+		        	end
+		        	else
+		        		$fwrite('h8000_0001, "[X]");
+		        end
+				$fwrite('h8000_0001, "\n\n");
 
-			$fwrite('h8000_0001, "Which tableau would you like to move to?\n");
-			userInput = $fgetc('h8000_0000);
-			$fgetc('h8000_0000);
-			destination = tableauNum(userInput);
+				$fwrite('h8000_0001, "Which pile would you like to move from?\nInput numbers 1-7 to move from tableaus 1-7 respectively, 0 to move from talon pile, 8 to draw a card from the stock pile, or 9 to let the computer find a move.\n");
+				userInput = $fgetc('h8000_0000);
+				$fgetc('h8000_0000);
+				source = tableauNum(userInput);
+
+				if(0 < source && source < 8) begin
+					$fwrite('h8000_0001, "How many cards would you like to move from the source tableau?\n");
+					userInput = $fgetc('h8000_0000);
+					$fgetc('h8000_0000);
+					source_offset = tableauNum(userInput);
+					source_offset = source_offset - 1;
+				end
+
+				if(source < 8) begin
+					$fwrite('h8000_0001, "Which pile would you like to move to?\nInput numbers 1-7 to move to tableaus 1-7 respectively, or 0 to move to foundation pile.\n");
+					userInput = $fgetc('h8000_0000);
+					$fgetc('h8000_0000);
+					destination = tableauNum(userInput);
+				end
+			end
 
 	        input_ready = 1;
 	    end
