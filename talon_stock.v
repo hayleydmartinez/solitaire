@@ -1,18 +1,21 @@
-`include "parameters.v"
+// `include "parameters.v"
 
 module talon_stock_functionality(
     input clk,
-    input rst, 
-    input check_pile, 
+    input rst,
+    input check_pile,
     input setup_ready,
-    input [24 * CARD_SIZE - 1:0] talon_pile_init, 
-    input [24 * CARD_SIZE - 1:0] stock_pile_init, 
-    input [4:0] talon_size_init, 
+    input [24 * 7 - 1:0] talon_pile_init,
+    input [24 * 7 - 1:0] stock_pile_init,
+    input [4:0] talon_size_init,
     input [4:0] stock_size_init,
-    output reg [24 * CARD_SIZE - 1:0] talon_pile, 
-    output reg [24 * CARD_SIZE - 1:0] stock_pile, 
-    output reg [4:0] talon_size, 
+    output reg [24 * 7 - 1:0] talon_pile,
+    output reg [24 * 7 - 1:0] stock_pile,
+    output reg [4:0] talon_size,
     output reg [4:0] stock_size);
+
+
+    parameter CARD_SIZE = 7;
 
     always @(posedge clk, posedge rst, posedge check_pile) begin
         if (rst || !setup_ready) begin
@@ -34,9 +37,9 @@ module talon_stock_functionality(
                 stock_pile[stock_size * CARD_SIZE +: CARD_SIZE - 1] = talon_pile_init[(24 - talon_size_init) * CARD_SIZE +: CARD_SIZE - 1];
                 talon_pile[(24 - talon_size_init) * CARD_SIZE +: CARD_SIZE - 1] = 0;
                 stock_size = stock_size_init + 1;
-                talon_size = talon-size_init - 1;
+                talon_size = talon_size_init - 1;
             end
         end
     end
-    
+
 endmodule
