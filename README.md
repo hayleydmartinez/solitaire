@@ -1,17 +1,14 @@
 # Solitaire: CS 152B Final Project
 
-## TODO
-- input/output to terminal: Karthik (in progress)
-
 ## Finished Modules
 - randomized setup (shuffle deck, tableaus, talon/stock): Hayley
 - place card (place cards from tableau/stock pile to tableau): Aseem
+- input/output to terminal: Karthik
 - lets user look at talon pile 
 - lets user move card to foundation 
 - reveals a card once tableau has no visible cards 
 - checks if u won or not 
 - basic io to terminal
-
 
 List of files to use for final setup:
 
