@@ -6,9 +6,14 @@ parameter SPADES = 2'b11;
 
 // tableau parameters
 parameter TABLEAU_NUMBER = 7;
+parameter MAX_TABLEAU_SIZE = 19;
 parameter TABLEAU2 = 1;
 parameter TABLEAU3 = 2;
 parameter TABLEAU4 = 3;
 parameter TABLEAU5 = 4;
 parameter TABLEAU6 = 5;
 parameter TABLEAU7 = 6;
+
+// deck parameters
+parameter DECK_SIZE = 52;
+parameter CARD_SIZE = 7;

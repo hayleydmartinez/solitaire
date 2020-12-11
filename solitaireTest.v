@@ -41,35 +41,36 @@ module solitaire(clk, rst);
     wire [3:0] source, destination, source_offset;
     wire input_ready, successful;
 
-    // if this is zero, you've won the game
-    wire [44:0] covered_cards;
+    // did u win or nah
+    // H C D S
+    wire [4*7-1:0] finished_game = (foundation_cards == 28'b1100001110001111001011100111);
 
     wire setup_ready;
-    setup solitaire_setup(.clk(clk), 
+    setup solitaire_setup(.clk(clk),
                           .rst(rst),
                           .stock_pile(stock_pile_input),
                           .talon_pile(talon_pile_input),
                           .tableau1(tableau1_input),
-                          .tableau2(tableau2_input), 
-                          .tableau3(tableau3_input), 
-                          .tableau4(tableau4_input), 
-                          .tableau5(tableau5_input), 
-                          .tableau6(tableau6_input), 
+                          .tableau2(tableau2_input),
+                          .tableau3(tableau3_input),
+                          .tableau4(tableau4_input),
+                          .tableau5(tableau5_input),
+                          .tableau6(tableau6_input),
                           .tableau7(tableau7_input),
                           .ready(setup_ready));
 
-
-    inputOutput         io(.clk(clk), 
+    // add check talon pile
+    inputOutput         io(.clk(clk),
                           .rst(rst),
                           .stock_pile(stock_pile),
                           .talon_pile(talon_pile),
                           .tableau1(tableau1),
-                          .tableau2(tableau2), 
-                          .tableau3(tableau3), 
-                          .tableau4(tableau4), 
-                          .tableau5(tableau5), 
-                          .tableau6(tableau6), 
-                          .tableau7(tableau7), 
+                          .tableau2(tableau2),
+                          .tableau3(tableau3),
+                          .tableau4(tableau4),
+                          .tableau5(tableau5),
+                          .tableau6(tableau6),
+                          .tableau7(tableau7),
                           .foundation_cards(foundation_cards),
                           .ready(setup_ready & move_ready),
                           .successful(successful),
@@ -78,17 +79,17 @@ module solitaire(clk, rst);
                           .destination(destination),
                           .input_ready(input_ready));
 
-    moveCard          move(.clk(clk), 
+    moveCard          move(.clk(clk),
                           .rst(rst),
                           .stock_pile_input(stock_pile_input),
                           .talon_pile_input(talon_pile_input),
                           .tableau1_input(tableau1_input),
-                          .tableau2_input(tableau2_input), 
-                          .tableau3_input(tableau3_input), 
-                          .tableau4_input(tableau4_input), 
-                          .tableau5_input(tableau5_input), 
-                          .tableau6_input(tableau6_input), 
-                          .tableau7_input(tableau7_input), 
+                          .tableau2_input(tableau2_input),
+                          .tableau3_input(tableau3_input),
+                          .tableau4_input(tableau4_input),
+                          .tableau5_input(tableau5_input),
+                          .tableau6_input(tableau6_input),
+                          .tableau7_input(tableau7_input),
                           .source(source),
                           .source_offset(source_offset),
                           .destination(destination),
@@ -97,25 +98,30 @@ module solitaire(clk, rst);
                           .stock_pile(stock_pile),
                           .talon_pile(talon_pile),
                           .tableau1(tableau1),
-                          .tableau2(tableau2), 
-                          .tableau3(tableau3), 
-                          .tableau4(tableau4), 
-                          .tableau5(tableau5), 
-                          .tableau6(tableau6), 
-                          .tableau7(tableau7), 
+                          .tableau2(tableau2),
+                          .tableau3(tableau3),
+                          .tableau4(tableau4),
+                          .tableau5(tableau5),
+                          .tableau6(tableau6),
+                          .tableau7(tableau7),
                           .foundation_cards(foundation_cards),
                           .move_ready(move_ready));
 
+    /*
+    wire [4:0] talon_size_init, stock_size_init, talon_size, stock_size;
+    wire check_pile;
 
-    /* modules we need to write
-       - randomizer to fill the tableaus [x]
-       - input/output to terminal (could be separate) []
-       - lets user look at talon pile []
-       - lets user move card from tableau to tableau []
-       - lets user move card to foundation []
-       - lets user move card from talon to tableau/foundation []
-       - reveals a card once tableau has no visible cards []
-       - checks if u won or not []
+    talon_stock       tsf(.clk(clk),
+                          .rst(rst),
+                          .check_pile(check_pile), // where will this prompt come from
+                          .setup_ready(setup_ready),
+                          .talon_pile_init(talon_pile_init),
+                          .stock_pile_init(stock_pile_init),
+                          .talon_size_init(talon_size_init),
+                          .stock_size_init(stock_size_init),
+                          .talon_pile(talon_pile),
+                          .stock_pile(stock_pile),
+                          .talon_size(talon_size),
+                          .stock_size(stock_size));
     */
-
 endmodule
