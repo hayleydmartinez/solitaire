@@ -74,6 +74,8 @@ module inputOutput(clk, rst, stock_pile, talon_pile, tableau1, tableau2, tableau
 	    		53: tableauNum = 5;
 	    		54: tableauNum = 6;
 	    		55: tableauNum = 7;
+	    		56: tableauNum = 8;
+	    		57: tableauNum = 9;
 	    		default: tableauNum = 8;
 	    	endcase
 	    end

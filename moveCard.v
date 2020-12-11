@@ -103,7 +103,7 @@ module moveCard(clk, rst, stock_pile_input, talon_pile_input, tableau1_input, ta
 
 
 	reg [6:0] sourceIndex = 18, destinationIndex = 18, i = 18;
-	reg [3:0] offsetCounter = 0;
+    reg [3:0] offsetCounter = 0, sourceTableauIterator = 0, destinationTableauIterator = 0;
 	reg offsetBegin = 0, sourceLoopComplete = 0;
 	reg [1:0] setPileOutput;
 
@@ -299,6 +299,109 @@ module moveCard(clk, rst, stock_pile_input, talon_pile_input, tableau1_input, ta
 
 	    		successful = 1;
     		end
+
+
+            else if(9 == source) begin
+                for(sourceTableauIterator = 1; sourceTableauIterator < 8 && successful == 0; sourceTableauIterator = sourceTableauIterator + 1) begin
+                    for(destinationTableauIterator = 1; destinationTableauIterator < 8 && successful == 0; destinationTableauIterator = destinationTableauIterator + 1) begin
+                        currSource = getPile(sourceTableauIterator);
+                        currDestination = getPile(destinationTableauIterator);
+                        offsetBegin = 0;
+                        offsetCounter = 0;//source_offset;
+                        sourceLoopComplete = 0;
+
+                        for(i = 18; i != 0; i = i - 1) begin
+                            if(!sourceLoopComplete) begin
+                                if(!offsetBegin && currSource[i*7] == 1) begin
+                                    offsetBegin = 1;
+                                end
+                                else if(offsetBegin && currSource[i*7] == 1) begin
+                                    offsetCounter = offsetCounter - 1;
+                                end
+                                else if(offsetBegin && currSource[i*7] == 0) begin
+                                    //invalid input
+                                end
+
+                                if(offsetBegin && offsetCounter == 0) begin
+                                    sourceLoopComplete = 1;
+                                    sourceIndex = i;
+                                end
+                            end
+                        end
+                        //For i == 0
+                        if(!sourceLoopComplete) begin
+                            if(!offsetBegin && currSource[i*7] == 1) begin
+                                offsetBegin = 1;
+                            end
+                            else if(offsetBegin && currSource[i*7] == 1) begin
+                                offsetCounter = offsetCounter - 1;
+                            end
+                            else if(offsetBegin && currSource[i*7] == 0) begin
+                                //invalid input
+                            end
+
+                            if(offsetBegin && offsetCounter == 0) begin
+                                sourceLoopComplete = 1;
+                                sourceIndex = i;
+                            end
+                        end
+
+                        offsetBegin = 0;
+                        for(i = 18; i != 0; i = i - 1) begin
+                            if(!offsetBegin && currDestination[i*7] == 1) begin
+                                offsetBegin = 1;
+                                destinationIndex = i;
+                            end
+                        end
+                        //For i == 0
+                        if(!offsetBegin && currDestination[i*7] == 1) begin
+                            offsetBegin = 1;
+                            destinationIndex = i;
+                        end
+
+                        if(sourceLoopComplete) begin
+                            if(((currSource[sourceIndex*7+2 -: 2] == CLUBS && (currDestination[destinationIndex*7+2 -: 2] == HEARTS || currDestination[destinationIndex*7+2 -: 2] == DIAMONDS))
+                            || (currSource[sourceIndex*7+2 -: 2] == SPADES && (currDestination[destinationIndex*7+2 -: 2] == HEARTS || currDestination[destinationIndex*7+2 -: 2] == DIAMONDS))
+                            || (currSource[sourceIndex*7+2 -: 2] == HEARTS && (currDestination[destinationIndex*7+2 -: 2] == SPADES || currDestination[destinationIndex*7+2 -: 2] == CLUBS))
+                            || (currSource[sourceIndex*7+2 -: 2] == DIAMONDS && (currDestination[destinationIndex*7+2 -: 2] == SPADES || currDestination[destinationIndex*7+2 -: 2] == CLUBS)))
+                            && currSource[sourceIndex*7+6 -: 4] + 1 == currDestination[destinationIndex*7+6 -: 4]) begin
+                                destinationIndex = destinationIndex + 1;
+
+                                if(sourceIndex > 0)
+                                    currSource[(sourceIndex-1)*7] = 1'b1;
+
+                                for(offsetCounter = 0; offsetCounter <= source_offset; offsetCounter = offsetCounter + 1) begin
+                                    currDestination[destinationIndex*7+6 -: 7] = currSource[sourceIndex*7+6 -: 7] | 7'b0000001;
+                                    currSource[sourceIndex*7+6 -: 7] = 7'b0000000;
+                                    destinationIndex = destinationIndex + 1;
+                                    sourceIndex = sourceIndex + 1;
+                                end
+
+                                setPileOutput = setPile(sourceTableauIterator, currSource);
+                                setPileOutput = setPile(destinationTableauIterator, currDestination);
+                                successful = 1;
+                            end
+                        end
+                        else if(currDestination == 0 && currSource[sourceIndex*7+6 -: 4] == 13) begin
+                                destinationIndex = 0;
+                                if(sourceIndex > 0)
+                                    currSource[(sourceIndex-1)*7] = 1'b1;
+
+                                for(offsetCounter = 0; offsetCounter <= source_offset; offsetCounter = offsetCounter + 1) begin
+                                    currDestination[destinationIndex*7+6 -: 7] = currSource[sourceIndex*7+6 -: 7] | 7'b0000001;
+                                    currSource[sourceIndex*7+6 -: 7] = 7'b0000000;
+                                    destinationIndex = destinationIndex + 1;
+                                    sourceIndex = sourceIndex + 1;
+                                end
+
+                                setPileOutput = setPile(sourceTableauIterator, currSource);
+                                setPileOutput = setPile(destinationTableauIterator, currDestination);
+                                successful = 1;
+                        end
+                    end
+                end
+            end
+            
 	    	move_ready = 1;
     	end
     end
